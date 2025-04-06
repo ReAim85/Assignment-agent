@@ -21,6 +21,8 @@ app.post("/generate", async (req, res) => {
   try {
     const { aims } = req.body;
 
+    console.log(aims);
+
     if (!aims) {
       res.status(400).json({ error: "No aims provided" });
       return;
@@ -33,25 +35,19 @@ app.post("/generate", async (req, res) => {
     const results = await Promise.all(
       aims.map(async (aim) => {
         const { code, inputs } = await generateCode(aim);
-
-        console.log("Received from generateCode():", { code, inputs });
-
         const output = await executeCode(code, inputs);
-        const screenshotPath = await generateScreenshot(
+        const screenshotBase64String = await generateScreenshot(
           code,
           output,
           aim,
           inputs
         );
         return {
-          aim,
-          code,
-          output,
-          screenshot: `http://localhost:5000/${screenshotPath}`,
+          screenshot: screenshotBase64String,
         };
       })
     );
-    res.json(results);
+    res.status(200).json({ Base64: results });
   } catch (err) {
     console.log(err);
     res.status(500).json({ error: "Internal server error" });

@@ -1,7 +1,4 @@
 import puppeteer, { Browser } from "puppeteer";
-import fs from "fs/promises";
-import path from "path";
-import { v4 as uuid } from "uuid";
 
 export const generateScreenshot = async (code, output, aim) => {
   const cleanedCode = code
@@ -13,13 +10,13 @@ export const generateScreenshot = async (code, output, aim) => {
     <head>
       <style>
         body {
-          background-color: #1e1e1e;
+          background-color:rgb(255, 255, 255);
           font-family: 'Fira Code', monospace;
           color: #d4d4d4;
           padding: 20px;
         }
         h2 {
-          color: #ffffff;
+          color:rgb(0, 0, 0);
           font-size: 1.2rem;
         }
         pre {
@@ -35,34 +32,30 @@ export const generateScreenshot = async (code, output, aim) => {
       </style>
     </head>
     <body>
+    <div id="container">
       <h2>${aim}</h2>
       <pre><code>${cleanedCode}</code></pre>
       <div class="output">
-        <strong>Output:</strong>
-        <pre>${output}</pre>
+        <pre> <strong>Output:</strong> <br/>${output}</pre>
+      </div>
       </div>
     </body>
     </html>
     `;
 
-  const fileName = `${uuid()}.png`;
-  const filePath = path.join("screenshots", fileName);
-
-  await fs.mkdir("screenshots", { recursive: true });
-
   const browser = await puppeteer.launch();
   const page = await browser.newPage();
   await page.setContent(htmlTemplate, { waitUntil: "networkidle0" });
   await page.evaluateHandle("document.fonts.ready");
-  const bodyHandle = await page.$("body");
-  const boundingBox = await bodyHandle.boundingBox();
+  const container = await page.$("#container");
+  const boundingBox = await container.boundingBox();
   await page.setViewport({
     width: 800,
     height: Math.ceil(boundingBox.height) + 40,
   });
 
-  await page.screenshot({ path: filePath, fullPage: true });
+  const screenshotBase64 = await page.screenshot({ encoding: "base64" });
   await browser.close();
 
-  return filePath;
+  return `data:image/png;base64,${screenshotBase64}`;
 };

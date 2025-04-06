@@ -1,7 +1,10 @@
 import { GoogleGenAI } from "@google/genai";
+import dotenv from "dotenv";
+
+dotenv.config();
 
 const ai = new GoogleGenAI({
-  apiKey: process.env.AI_API,
+  apiKey: process.env.AiApiKey,
 });
 
 export const generateCode = async (aim) => {
@@ -29,6 +32,8 @@ export const generateCode = async (aim) => {
       .replace(/```(json)?/g, "")
       .replace(/```/g, "")
       .trim();
+
+    console.log(cleanJSON);
 
     let parsed;
     try {
