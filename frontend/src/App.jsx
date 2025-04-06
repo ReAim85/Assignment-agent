@@ -1,15 +1,14 @@
-import Home from './home.jsx'
-import { Provider } from 'jotai'
+import Home from "./component/home.jsx";
+import { Provider } from "jotai";
 
 function App() {
   return (
     <>
-    <Provider>
-    <Home/>
-    </Provider>
+      <Provider>
+        <Home />
+      </Provider>
     </>
-  )
-  }
-  
+  );
+}
 
-export default App
+export default App;
