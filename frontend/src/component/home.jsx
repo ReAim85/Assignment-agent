@@ -14,7 +14,7 @@ function Home() {
   const handleSubmit = async () => {
     try {
       const res = await axios.post(
-        "https://jg24nvtl-5000.inc1.devtunnels.ms/generate",
+        "http://localhost:5000/generate",
         { aims: aims.split("\n") },
         { headers: { "Content-Type": "application/json" } }
       );

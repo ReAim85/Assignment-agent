@@ -1,10 +1,10 @@
 import { GoogleGenAI } from "@google/genai";
-import dotenv from "dotenv";
-
-dotenv.config();
+import "config.js";
+// import dotenv from "dotenv";
+// dotenv.config();
 
 const ai = new GoogleGenAI({
-  apiKey: process.env.AiApiKey,
+  apiKey: Config.APIKey 
 });
 
 export const generateCode = async (aim) => {
@@ -15,26 +15,29 @@ export const generateCode = async (aim) => {
   4. The output should also include clear text before showing results (e.g., "The total sum is:").
   5. If the code uses input(), provide the required input values separately as an array of strings.
   6. Ensure all print statements are visible and flushed immediately using flush=True or similar techniques so that real-time prompts are visible in output.
-  7. Respond in the following JSON format:
+  7. Provide a clear, small and brief algorithm/logic explanation (3-5 bullet points only) describing the approach used in the code. Directly start with bullet points and not with "Here is the logic".
+  8. Respond in the following JSON format:
   {
     "code": "your generated code",
-    "inputs" : ["value1", "value2"] // if no input needed, return an empty array
+    "inputs": ["value1", "value2"], // if no input needed, return an empty array
+    "algorithm": "small and brief algorithm/logic explanation in bullet points"
   }
-  DO NOT include any explanation or comments, just the JSON.`;
+  DO NOT include any explanation or comments outside the JSON, just the JSON.`;
 
   try {
     const res = await ai.models.generateContent({
       model: "gemini-2.0-flash",
       contents: prompt,
     });
-
+    console.log(prompt);
+    
     const cleanJSON = res.text
       .replace(/```(json)?/g, "")
       .replace(/```/g, "")
       .trim();
-
+    
     console.log(cleanJSON);
-
+    
     let parsed;
     try {
       parsed = JSON.parse(cleanJSON);
@@ -42,6 +45,7 @@ export const generateCode = async (aim) => {
       console.log("Error parsing json from ai response", err);
       throw new Error("failed to parse AI response as JSON");
     }
+    
     return parsed;
   } catch (err) {
     console.error("There was an error generating code ", err);

@@ -14,12 +14,12 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const app = express();
 
 app.use(express.json());
-app.use(cors({ origin: "https://jg24nvtl-5173.inc1.devtunnels.ms" }));
+app.use(cors({ origin: "http://localhost:5173" }));
 app.use(express.static(path.join(__dirname, "frontend/build")));
 
 app.post("/generate", async (req, res) => {
   try {
-    const { aims } = req.body;
+    let { aims } = req.body;
 
     console.log(aims);
 
@@ -34,13 +34,13 @@ app.post("/generate", async (req, res) => {
 
     const results = await Promise.all(
       aims.map(async (aim) => {
-        const { code, inputs } = await generateCode(aim);
+        const { code, inputs, algorithm } = await generateCode(aim);
         const output = await executeCode(code, inputs);
         const screenshotBase64String = await generateScreenshot(
           code,
           output,
           aim,
-          inputs
+          algorithm  // Changed from inputs to algorithm
         );
         return {
           screenshot: screenshotBase64String,
