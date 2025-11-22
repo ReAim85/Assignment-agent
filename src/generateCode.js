@@ -1,5 +1,5 @@
 import { GoogleGenAI } from "@google/genai";
-import "config.js";
+import {Config} from './config.js';
 // import dotenv from "dotenv";
 // dotenv.config();
 
